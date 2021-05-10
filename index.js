@@ -16,6 +16,7 @@ let hobbits = [
     age: 33,
   },
 ];
+
 let nextId = 3;
 
 server.get("/", (req, res) => {
@@ -69,10 +70,17 @@ server.put("/hobbits/:id", (req, res) => {
 server.delete("/hobbits/:id", (req, res) => {
   const id = req.params.id;
   // or we could destructure it like so: const { id } = req.params;
-  res.status(200).json({
-    url: `/hobbits/${id}`,
-    operation: `DELETE for hobbit with id ${id}`,
-  });
+
+  const hobbit = hobbits.find((h) => h.id == id);
+  const index = hobbits.indexOf(hobbit);
+
+  if (!hobbit) {
+    res.status(404).json({ message: "Hobbit does not exist" });
+  } else {
+    // modify the existing hobbit
+    hobbits.splice(index, 1);
+    res.status(200).json(hobbits);
+  }
 });
 
 server.listen(8000, () => console.log("API running on port 8000"));
